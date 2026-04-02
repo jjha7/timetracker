@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Camp Village · Staff Hours</title>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --navy:   #0F1C2E;
+    --navy2:  #162336;
+    --slate:  #2C3E55;
+    --accent: #C8963E;
+    --accent2:#E8B86D;
+    --success:#2D7A5F;
+    --danger: #C0392B;
+    --muted:  #7A8FA6;
+    --border: #DDE3EC;
+    --bg:     #F4F6F9;
+    --card:   #FFFFFF;
+    --shadow: 0 2px 16px rgba(15,28,46,0.08);
+    --shadow-md: 0 4px 24px rgba(15,28,46,0.12);
+    --radius: 12px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); font-family: 'Outfit', sans-serif; color: var(--navy); min-height: 100vh; }
+
+  .header {
+    background: var(--navy); border-bottom: 3px solid var(--accent);
+    padding: 22px 24px 52px; text-align: center; position: relative; overflow: hidden;
+  }
+  .header::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 50% 120%, rgba(200,150,62,0.12) 0%, transparent 65%);
+    pointer-events: none;
+  }
+  .header h1 { font-family: 'Libre Baskerville', serif; font-size: 1.55rem; color: #fff; letter-spacing: 0.02em; }
+  .header h1 span { color: var(--accent); }
+  .header p { margin-top: 5px; font-size: 0.68rem; font-weight: 500; letter-spacing: 0.22em; text-transform: uppercase; color: var(--muted); }
+  .header-user-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.14);
+    border-radius: 6px; padding: 7px 16px; margin-top: 12px;
+    font-size: 0.82rem; color: rgba(255,255,255,0.85); font-weight: 500; letter-spacing: 0.03em;
+  }
+  .btn-signout {
+    background: transparent; border: 1px solid rgba(255,255,255,0.25); color: rgba(255,255,255,0.7);
+    border-radius: 4px; padding: 4px 12px; font-size: 0.76rem; font-weight: 500; cursor: pointer;
+    margin-left: 10px; font-family: 'Outfit', sans-serif; transition: all 0.2s; letter-spacing: 0.04em;
+  }
+  .btn-signout:hover { background: rgba(255,255,255,0.1); color: #fff; }
+
+  .nav-wrap {
+    display: flex; justify-content: center; margin-top: -20px;
+    padding: 0 20px; gap: 6px; position: relative; z-index: 10;
+  }
+  .nav-pill {
+    flex: 1; max-width: 135px; background: var(--card);
+    border: 1px solid var(--border); border-radius: 6px;
+    padding: 11px 8px; font-family: 'Outfit', sans-serif; font-size: 0.72rem;
+    font-weight: 600; color: var(--muted); cursor: pointer;
+    box-shadow: var(--shadow); transition: all 0.18s;
+    letter-spacing: 0.05em; text-transform: uppercase;
+  }
+  .nav-pill:hover { color: var(--navy); border-color: var(--accent); }
+  .nav-pill.active { background: var(--navy); color: var(--accent); border-color: var(--navy); }
+
+  .content { padding: 20px 16px 56px; max-width: 480px; margin: 0 auto; }
+  .screen { display: none; }
+  .screen.active { display: block; }
+  .admin-tab { display: none; }
+  .admin-tab.active { display: block; }
+
+  .card {
+    background: var(--card); border-radius: var(--radius); padding: 24px;
+    box-shadow: var(--shadow); margin-bottom: 14px; border: 1px solid var(--border);
+  }
+  .card-title {
+    font-family: 'Libre Baskerville', serif; font-size: 1rem; font-weight: 700;
+    margin-bottom: 18px; color: var(--navy); letter-spacing: 0.01em;
+  }
+
+  label { font-size: 0.7rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; display: block; margin-bottom: 6px; }
+  select, input[type="text"], input[type="password"] {
+    width: 100%; border: 1.5px solid var(--border); border-radius: 8px; padding: 12px 14px;
+    font-family: 'Outfit', sans-serif; font-size: 0.95rem; color: var(--navy);
+    background: #fff; appearance: none; transition: border-color 0.18s, box-shadow 0.18s;
+  }
+  select:focus, input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(200,150,62,0.12); }
+  input.shake { animation: shake 0.4s; border-color: var(--danger) !important; }
+  @keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-6px)} 40%{transform:translateX(6px)} 60%{transform:translateX(-4px)} 80%{transform:translateX(4px)} }
+  .select-wrap { position: relative; }
+  .select-wrap::after { content:'▾'; position:absolute; right:14px; top:50%; transform:translateY(-50%); pointer-events:none; color:var(--muted); font-size:0.85rem; }
+  .field-gap { margin-top: 16px; }
+
+  .landing-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 10px; }
+  .role-card {
+    background: var(--card); border: 1.5px solid var(--border); border-radius: var(--radius);
+    padding: 28px 14px; text-align: center; cursor: pointer;
+    box-shadow: var(--shadow); transition: all 0.2s;
+  }
+  .role-card:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 8px 28px rgba(200,150,62,0.18); }
+  .role-card .emoji { font-size: 1.8rem; display: block; margin-bottom: 10px; }
+  .role-card .role-name { font-family: 'Libre Baskerville', serif; font-size: 0.92rem; font-weight: 700; color: var(--navy); }
+  .role-card .role-desc { font-size: 0.74rem; color: var(--muted); margin-top: 4px; }
+
+  .pin-display { display: flex; justify-content: center; gap: 16px; margin: 22px 0 14px; }
+  .pin-dot { width: 13px; height: 13px; border-radius: 50%; border: 2px solid var(--border); background: transparent; transition: all 0.15s; }
+  .pin-dot.filled { background: var(--accent); border-color: var(--accent); transform: scale(1.1); }
+  .pin-display.pin-error .pin-dot { background: var(--danger); border-color: var(--danger); animation: shake 0.4s; }
+
+  .numpad { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin: 6px 0; }
+  .numpad-btn {
+    background: var(--bg); border: 1.5px solid var(--border); border-radius: 8px; padding: 17px;
+    font-family: 'Libre Baskerville', serif; font-size: 1.2rem; font-weight: 700; color: var(--navy);
+    cursor: pointer; transition: all 0.12s; user-select: none;
+  }
+  .numpad-btn:hover { background: #e8ecf2; border-color: var(--accent); }
+  .numpad-btn:active { background: var(--navy); color: #fff; transform: scale(0.96); }
+  .numpad-btn.back { font-family: 'Outfit', sans-serif; font-size: 1rem; color: var(--muted); }
+  .numpad-btn.zero { grid-column: 2; }
+
+  .status-badge { display:flex; align-items:center; gap:10px; padding:13px 16px; border-radius:8px; margin:14px 0; font-size:0.87rem; font-weight:500; border: 1px solid transparent; }
+  .status-badge.idle { background: var(--bg); color: var(--muted); border-color: var(--border); }
+  .status-badge.clocked-in { background: #EAF5EF; color: var(--success); border-color: #B8DFC9; }
+  .status-badge .dot { width:8px; height:8px; border-radius:50%; background:currentColor; flex-shrink:0; }
+  .status-badge.clocked-in .dot { animation: pulse 1.6s ease-in-out infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(1.4)} }
+
+  .clock-display { text-align:center; padding:8px 0 6px; }
+  .clock-time { font-family:'Libre Baskerville',serif; font-size:2.8rem; font-weight:700; color:var(--navy); letter-spacing:-0.5px; line-height:1; }
+  .clock-date { font-size:0.78rem; color:var(--muted); margin-top:6px; letter-spacing:0.06em; text-transform:uppercase; }
+
+  .btn-row { display:flex; gap:10px; margin-top:16px; }
+  .btn { flex:1; border:none; border-radius:8px; padding:14px; font-family:'Outfit',sans-serif; font-size:0.85rem; font-weight:600; cursor:pointer; transition:all 0.15s; letter-spacing:0.06em; text-transform:uppercase; }
+  .btn:active { transform:scale(0.98); }
+  .btn:disabled { opacity:0.3; cursor:not-allowed; }
+  .btn-in  { background: var(--success); color:#fff; box-shadow:0 3px 12px rgba(45,122,95,0.3); }
+  .btn-in:hover:not(:disabled)  { background:#256B51; }
+  .btn-out { background: var(--danger); color:#fff; box-shadow:0 3px 12px rgba(192,57,43,0.3); }
+  .btn-out:hover:not(:disabled) { background:#A93226; }
+  .btn-sky { background: var(--navy); color: var(--accent); border: 1.5px solid var(--accent); }
+  .btn-sky:hover { background: var(--slate); }
+  .btn-muted { background: var(--bg); color: var(--muted); border: 1.5px solid var(--border); }
+  .btn-muted:hover { color: var(--navy); border-color: var(--navy); }
+  .btn-full { width:100%; }
+
+  .summary-row { display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid var(--border); font-size:0.875rem; }
+  .summary-row:last-child { border-bottom:none; }
+  .summary-row .label { color:var(--muted); }
+  .summary-row .value { font-weight:600; color:var(--navy); }
+
+  #toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(80px); background:var(--navy); color:#fff; padding:11px 22px; border-radius:6px; font-size:0.84rem; font-weight:500; border-left:3px solid var(--accent); box-shadow:0 8px 32px rgba(0,0,0,0.22); transition:transform 0.3s cubic-bezier(.34,1.56,.64,1); z-index:999; white-space:nowrap; letter-spacing:0.02em; }
+  #toast.show { transform:translateX(-50%) translateY(0); }
+  #toast.error { background:var(--danger); border-left-color:#e88; }
+
+  .admin-controls { display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap; align-items:center; }
+  .btn-sm { padding:8px 15px; border-radius:6px; border:1.5px solid var(--border); font-family:'Outfit',sans-serif; font-size:0.73rem; font-weight:600; cursor:pointer; transition:all 0.15s; letter-spacing:0.06em; text-transform:uppercase; }
+  .btn-sm:hover { opacity:0.85; }
+  .btn-export { background: var(--accent); color: var(--navy); border-color: var(--accent); }
+  .btn-clear  { background: var(--bg); color: var(--muted); }
+  .filter-input { flex:1; border:1.5px solid var(--border); border-radius:8px; padding:9px 14px; font-family:'Outfit',sans-serif; font-size:0.85rem; min-width:100px; transition:border-color 0.18s; }
+  .filter-input:focus { outline:none; border-color:var(--accent); box-shadow:0 0 0 3px rgba(200,150,62,0.1); }
+
+  .table-wrap { overflow-x:auto; border-radius:var(--radius); border:1px solid var(--border); margin-bottom:16px; }
+  table { width:100%; border-collapse:collapse; background:#fff; font-size:0.84rem; }
+  thead { background:var(--navy); color:#fff; }
+  thead th { padding:11px 14px; text-align:left; font-weight:600; white-space:nowrap; font-size:0.7rem; letter-spacing:0.1em; text-transform:uppercase; }
+  tbody tr { border-bottom:1px solid var(--border); }
+  tbody tr:last-child { border-bottom:none; }
+  tbody td { padding:11px 14px; color:var(--navy); white-space:nowrap; }
+  tbody tr:hover td { background:#F8F9FB; }
+  .pill { border-radius:4px; padding:2px 9px; font-weight:600; font-size:0.76rem; letter-spacing:0.04em; }
+  .pill-green { background:#EAF5EF; color:var(--success); }
+  .pill-yellow { background:#FEF9E7; color:#8a6d00; }
+
+  .empty-state { text-align:center; padding:48px 24px; color:var(--muted); }
+  .empty-state .emoji { font-size:2rem; }
+  .empty-state p { margin-top:10px; font-size:0.875rem; }
+
+  .totals-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px; }
+  .total-chip { background:var(--card); border-radius:var(--radius); padding:14px 16px; border:1px solid var(--border); box-shadow:var(--shadow); }
+  .total-chip .t-name { font-size:0.68rem; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:0.1em; }
+  .total-chip .t-hrs  { font-family:'Libre Baskerville',serif; font-size:1.5rem; font-weight:700; color:var(--navy); margin-top:3px; }
+
+  .staff-list { list-style:none; }
+  .staff-item { display:flex; align-items:center; justify-content:space-between; padding:13px 16px; background:var(--card); border-radius:var(--radius); margin-bottom:8px; border:1px solid var(--border); box-shadow:var(--shadow); }
+  .staff-item .s-name { font-weight:600; font-size:0.9rem; }
+  .staff-item .s-pin  { font-size:0.74rem; color:var(--muted); margin-top:2px; letter-spacing:0.04em; }
+  .staff-actions { display:flex; gap:5px; flex-shrink:0; }
+  .icon-btn { background:var(--bg); border:1px solid var(--border); border-radius:5px; padding:5px 10px; cursor:pointer; font-size:0.72rem; font-weight:600; font-family:'Outfit',sans-serif; transition:all 0.15s; white-space:nowrap; color:var(--slate); letter-spacing:0.03em; }
+  .icon-btn:hover { background:#e2e8f0; border-color:var(--navy); color:var(--navy); }
+  .icon-btn.del:hover { background:#fdecea; border-color:var(--danger); color:var(--danger); }
+
+  .modal-overlay { position:fixed; inset:0; background:rgba(15,28,46,0.6); z-index:500; display:flex; align-items:center; justify-content:center; padding:20px; opacity:0; pointer-events:none; transition:opacity 0.2s; backdrop-filter:blur(2px); }
+  .modal-overlay.open { opacity:1; pointer-events:all; }
+  .modal { background:var(--card); border-radius:var(--radius); padding:28px 24px; width:100%; max-width:360px; box-shadow:0 24px 64px rgba(15,28,46,0.25); border:1px solid var(--border); border-top:3px solid var(--accent); transform:scale(0.96) translateY(10px); transition:transform 0.22s cubic-bezier(.34,1.56,.64,1); }
+  .modal-overlay.open .modal { transform:scale(1) translateY(0); }
+  .modal h3 { font-family:'Libre Baskerville',serif; font-size:1.05rem; margin-bottom:18px; color:var(--navy); }
+  .modal-actions { display:flex; gap:10px; margin-top:20px; }
+
+  .err-msg { color:var(--danger); font-size:0.82rem; margin-top:8px; min-height:18px; }
+  .ok-msg  { color:var(--success); font-size:0.82rem; margin-top:8px; min-height:18px; }
+  .hint-box { margin-top:14px; padding:13px 16px; background:var(--bg); border-radius:8px; font-size:0.78rem; color:var(--muted); border-left:3px solid var(--accent); }
+
+  @media(min-width:600px) {
+    .header h1 { font-size:1.9rem; }
+    .content { padding:24px 24px 64px; }
+  }
+</style>
+
+<!-- Firebase SDK -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getDatabase, ref, set, get, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+  // ── PASTE YOUR FIREBASE CONFIG HERE ──────────────────────────────────
+  // Go to: console.firebase.google.com → New project → Realtime Database
+  // → Rules: set read/write to true → Project Settings → Your apps → Config
+  const firebaseConfig = {
+    apiKey:            "PASTE_YOUR_API_KEY",
+    authDomain:        "PASTE_YOUR_PROJECT.firebaseapp.com",
+    databaseURL:       "PASTE_YOUR_DATABASE_URL",
+    projectId:         "PASTE_YOUR_PROJECT_ID",
+    storageBucket:     "PASTE_YOUR_PROJECT.appspot.com",
+    messagingSenderId: "PASTE_YOUR_SENDER_ID",
+    appId:             "PASTE_YOUR_APP_ID"
+  };
+  // ─────────────────────────────────────────────────────────────────────
+
+  const app = initializeApp(firebaseConfig);
+  const db  = getDatabase(app);
+
+  // Expose to global scope so non-module functions can use them
+  window._fb = { db, ref, set, get, onValue };
+  window._fbReady = true;
+
+  // ── SYNC: staff list ──
+  onValue(ref(db, 'staff'), snap => {
+    const data = snap.val();
+    if(data) {
+      localStorage.setItem('sc_staff_v2', JSON.stringify(data));
+      if(typeof renderStaffList === 'function') renderStaffList();
+      if(typeof populateStaffDropdown === 'function') populateStaffDropdown();
+    }
+  });
+
+  // ── SYNC: volunteers list ──
+  onValue(ref(db, 'volunteers'), snap => {
+    const data = snap.val();
+    if(data) {
+      localStorage.setItem('sc_volunteers_v1', JSON.stringify(data));
+      if(typeof renderVolunteerList === 'function') renderVolunteerList();
+    }
+  });
+
+  // ── SYNC: admin password ──
+  onValue(ref(db, 'adminPw'), snap => {
+    const pw = snap.val();
+    if(pw) localStorage.setItem('sc_admin_pw', pw);
+  });
+
+  // ── Override save functions to also write to Firebase ──
+  window._fbSaveStaff = function(arr) {
+    set(ref(db, 'staff'), arr);
+  };
+  window._fbSaveVolunteers = function(arr) {
+    set(ref(db, 'volunteers'), arr);
+  };
+  window._fbSaveAdminPw = function(pw) {
+    set(ref(db, 'adminPw'), pw);
+  };
+
+  console.log('Firebase connected ✅');
+</script>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <h1><span>Camp Village</span> Time Tracker</h1>
+  <p id="header-sub">C.A.U.S.E &nbsp;·&nbsp; Village Printing &nbsp;·&nbsp; Staff Hours</p>
+  <div id="header-user" style="display:none;">
+    <div class="header-user-badge">
+      <span id="header-user-name"></span>
+      <button class="btn-signout" onclick="signOut()">Sign out</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN NAV (only shown when admin is logged in) -->
+<div class="nav-wrap" id="main-nav" style="display:none;">
+  <button class="nav-pill active" id="nav-entries"    onclick="showAdminTab('entries',this)">📋 Entries</button>
+  <button class="nav-pill"        id="nav-staff"      onclick="showAdminTab('staff',this)">👥 Staff</button>
+  <button class="nav-pill"        id="nav-volunteers" onclick="showAdminTab('volunteers',this)">🙋 Volunteers</button>
+  <button class="nav-pill"        id="nav-settings"   onclick="showAdminTab('settings',this)">⚙️ Settings</button>
+</div>
+
+<div class="content">
+
+  <!-- ══════════════ LANDING ══════════════ -->
+  <div id="screen-landing" class="screen active">
+    <div class="card" style="margin-top:8px;">
+      <div class="card-title" style="text-align:center;font-size:0.95rem;">Welcome to Camp Village!</div>
+      <div class="landing-grid">
+        <div class="role-card" onclick="goToStaffLogin()">
+          <span class="emoji">🙋</span>
+          <div class="role-name">Staff / Volunteer</div>
+          <div class="role-desc">Clock in &amp; out</div>
+        </div>
+        <div class="role-card" onclick="goToAdminLogin()">
+          <span class="emoji">🔐</span>
+          <div class="role-name">Admin</div>
+          <div class="role-desc">View all records</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════ STAFF LOGIN ══════════════ -->
+  <div id="screen-staff-login" class="screen">
+    <div class="card" style="margin-top:8px;">
+      <div class="card-title">Select your name</div>
+      <div class="select-wrap">
+        <select id="staff-login-select" onchange="onStaffSelected()">
+          <option value="">— Select name —</option>
+        </select>
+      </div>
+
+      <div id="pin-section" style="display:none; margin-top:22px;">
+        <div style="text-align:center; font-size:0.85rem; color:var(--mid); font-weight:600; letter-spacing:0.04em; text-transform:uppercase;">Enter your PIN</div>
+        <div class="pin-display" id="pin-display">
+          <div class="pin-dot" id="dot-0"></div>
+          <div class="pin-dot" id="dot-1"></div>
+          <div class="pin-dot" id="dot-2"></div>
+          <div class="pin-dot" id="dot-3"></div>
+        </div>
+        <div class="numpad">
+          <button class="numpad-btn" onclick="pinKey('1')">1</button>
+          <button class="numpad-btn" onclick="pinKey('2')">2</button>
+          <button class="numpad-btn" onclick="pinKey('3')">3</button>
+          <button class="numpad-btn" onclick="pinKey('4')">4</button>
+          <button class="numpad-btn" onclick="pinKey('5')">5</button>
+          <button class="numpad-btn" onclick="pinKey('6')">6</button>
+          <button class="numpad-btn" onclick="pinKey('7')">7</button>
+          <button class="numpad-btn" onclick="pinKey('8')">8</button>
+          <button class="numpad-btn" onclick="pinKey('9')">9</button>
+          <button class="numpad-btn zero" onclick="pinKey('0')">0</button>
+          <button class="numpad-btn back" onclick="pinBackspace()">⌫</button>
+        </div>
+        <div id="pin-err" class="err-msg" style="text-align:center;"></div>
+      </div>
+
+      <button class="btn btn-muted btn-full" style="margin-top:16px;border-radius:14px;padding:14px;border:none;font-family:'DM Sans',sans-serif;font-size:0.95rem;font-weight:600;cursor:pointer;" onclick="showScreen('screen-landing')">← Back</button>
+    </div>
+  </div>
+
+  <!-- ══════════════ ADMIN LOGIN ══════════════ -->
+  <div id="screen-admin-login" class="screen">
+    <div class="card" style="margin-top:8px;">
+      <div class="card-title">🔐 Admin Login</div>
+      <label for="admin-pw-input">Password</label>
+      <input type="password" id="admin-pw-input" placeholder="Enter admin password" onkeydown="if(event.key==='Enter')adminLogin()"/>
+      <div id="admin-pw-err" class="err-msg"></div>
+      <div class="btn-row" style="margin-top:14px;">
+        <button class="btn btn-muted" onclick="showScreen('screen-landing')">← Back</button>
+        <button class="btn btn-sky" onclick="adminLogin()">Unlock →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════ CLOCK SCREEN ══════════════ -->
+  <div id="screen-clock" class="screen">
+    <div class="card">
+      <div class="clock-display">
+        <div class="clock-time" id="live-clock">--:--:--</div>
+        <div class="clock-date" id="live-date">Loading…</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title" id="clock-greeting">Ready to clock in?</div>
+      <div class="status-badge idle" id="status-badge">
+        <span class="dot"></span>
+        <span id="status-text">Not clocked in</span>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-in"  id="btn-in"  onclick="clockIn()">▶ Clock In</button>
+        <button class="btn btn-out" id="btn-out" onclick="clockOut()" disabled>■ Clock Out</button>
+      </div>
+    </div>
+
+    <div class="card" id="today-card" style="display:none;">
+      <div class="card-title">Today's sessions</div>
+      <div id="today-sessions"></div>
+    </div>
+  </div>
+
+  <!-- ══════════════ ADMIN SCREEN ══════════════ -->
+  <div id="screen-admin" class="screen">
+
+    <!-- TAB: Entries -->
+    <div id="admin-tab-entries" class="admin-tab active">
+      <div class="card" style="padding:18px 24px; margin-top:0;">
+        <div class="card-title" style="margin-bottom:0;">All Time Entries</div>
+      </div>
+      <div class="admin-controls">
+        <input type="text" class="filter-input" id="filter-input" placeholder="🔍 Filter by name or date…" oninput="renderAdmin()"/>
+        <button class="btn-sm btn-export" onclick="exportCSV()">⬇ CSV</button>
+        <button class="btn-sm btn-clear"  onclick="clearAll()">🗑 Clear</button>
+      </div>
+      <div id="totals-grid" class="totals-grid"></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Name</th><th>Date</th><th>In</th><th>Out</th><th>Hours</th></tr></thead>
+          <tbody id="admin-tbody"></tbody>
+        </table>
+        <div id="empty-state" class="empty-state" style="display:none;">
+          <div class="emoji">📭</div><p>No entries yet.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: Staff Management -->
+    <div id="admin-tab-staff" class="admin-tab">
+      <div class="card" style="padding:18px 24px; margin-top:0;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div class="card-title" style="margin-bottom:0;">Staff &amp; PINs</div>
+          <button class="btn-sm" style="background:var(--sky);color:#fff;" onclick="openAddStaffModal()">+ Add Staff</button>
+        </div>
+      </div>
+      <ul class="staff-list" id="staff-list-ul"></ul>
+    </div>
+
+    <!-- TAB: Volunteers -->
+    <div id="admin-tab-volunteers" class="admin-tab">
+      <div class="card" style="padding:18px 24px; margin-top:0;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div class="card-title" style="margin-bottom:0;">Volunteer List</div>
+          <button class="btn-sm" style="background:var(--grass);color:#fff;" onclick="openAddVolunteerModal()">+ Add Volunteer</button>
+        </div>
+      </div>
+      <ul class="staff-list" id="volunteer-list-ul"></ul>
+    </div>
+
+    <!-- TAB: Settings -->
+    <div id="admin-tab-settings" class="admin-tab">
+      <div class="card" style="margin-top:0;">
+        <div class="card-title">Change Admin Password</div>
+        <label>Current Password</label>
+        <input type="password" id="cur-pw" placeholder="Current password"/>
+        <label class="field-gap">New Password</label>
+        <input type="password" id="new-pw" placeholder="At least 4 characters"/>
+        <label class="field-gap">Confirm New Password</label>
+        <input type="password" id="conf-pw" placeholder="Repeat new password"/>
+        <div id="pw-msg" class="err-msg"></div>
+        <button class="btn btn-sky btn-full" style="margin-top:14px;" onclick="changeAdminPw()">Save New Password</button>
+      </div>
+    </div>
+
+  </div><!-- /screen-admin -->
+
+</div><!-- /content -->
+
+<!-- MODAL: Add / Edit Staff -->
+<div class="modal-overlay" id="staff-modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <h3 id="modal-title">Add Staff Member</h3>
+    <label>Full Name</label>
+    <input type="text" id="modal-name" placeholder="First Last"/>
+    <label class="field-gap" id="modal-pin-label">4-Digit PIN</label>
+    <input type="password" id="modal-pin" maxlength="4" placeholder="e.g. 1234" inputmode="numeric"/>
+    <div id="modal-err" class="err-msg"></div>
+    <div class="modal-actions">
+      <button class="btn btn-muted" style="flex:1;border:none;border-radius:12px;padding:14px;font-family:'DM Sans',sans-serif;font-size:0.95rem;font-weight:600;cursor:pointer;" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-sky"   style="flex:1;" onclick="saveStaffModal()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Add / Edit / Rename Volunteer -->
+<div class="modal-overlay" id="volunteer-modal" onclick="if(event.target===this)closeVolunteerModal()">
+  <div class="modal">
+    <h3 id="vol-modal-title">Add Volunteer</h3>
+    <label>Full Name</label>
+    <input type="text" id="vol-modal-name" placeholder="First Last"/>
+    <div id="vol-modal-err" class="err-msg"></div>
+    <div class="modal-actions">
+      <button class="btn btn-muted" style="flex:1;border:none;border-radius:12px;padding:14px;font-family:'DM Sans',sans-serif;font-size:0.95rem;font-weight:600;cursor:pointer;" onclick="closeVolunteerModal()">Cancel</button>
+      <button class="btn" style="flex:1;background:linear-gradient(135deg,var(--grass),#27ae60);color:#fff;box-shadow:0 4px 16px rgba(46,204,113,0.35);" onclick="saveVolunteerModal()">Save</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════
+//  STORAGE
+// ═══════════════════════════════════════════════
+const ENTRIES_KEY      = 'sc_entries_v2';
+const STAFF_KEY        = 'sc_staff_v2';
+const VOLUNTEERS_KEY   = 'sc_volunteers_v1';
+const ADMIN_PW_KEY     = 'sc_admin_pw';
+
+// ── DEFAULT LISTS (edit these directly to set your starting staff/volunteers)
+// Once saved on any device these are stored in Firebase and sync everywhere.
+const DEFAULT_STAFF = [];
+const DEFAULT_VOLUNTEERS = [];
+
+function loadEntries()    { try { return JSON.parse(localStorage.getItem(ENTRIES_KEY))||[]; } catch{return[];} }
+function saveEntries(a)   { localStorage.setItem(ENTRIES_KEY,JSON.stringify(a)); }
+function loadStaff()      { try { const s=JSON.parse(localStorage.getItem(STAFF_KEY)); return Array.isArray(s)?s:DEFAULT_STAFF; } catch{return DEFAULT_STAFF;} }
+function saveStaff(a)     { localStorage.setItem(STAFF_KEY,JSON.stringify(a)); if(window._fbSaveStaff) window._fbSaveStaff(a); }
+function loadVolunteers()  { try { const v=JSON.parse(localStorage.getItem(VOLUNTEERS_KEY)); return Array.isArray(v)?v:DEFAULT_VOLUNTEERS; } catch{return DEFAULT_VOLUNTEERS;} }
+function saveVolunteers(a) { localStorage.setItem(VOLUNTEERS_KEY,JSON.stringify(a)); if(window._fbSaveVolunteers) window._fbSaveVolunteers(a); }
+function getAdminPw()     { return localStorage.getItem(ADMIN_PW_KEY)||'Edwards0011#'; }
+function setAdminPw(p)    { localStorage.setItem(ADMIN_PW_KEY,p); if(window._fbSaveAdminPw) window._fbSaveAdminPw(p); }
+
+// ═══════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════
+let currentUser   = null;   // { name }
+let activeSession = null;   // { name, clockInTime }
+let pinBuffer     = '';
+
+// ═══════════════════════════════════════════════
+//  LIVE CLOCK
+// ═══════════════════════════════════════════════
+function pad(n){ return String(n).padStart(2,'0'); }
+function updateClock(){
+  const n=new Date();
+  document.getElementById('live-clock').textContent=`${pad(n.getHours())}:${pad(n.getMinutes())}:${pad(n.getSeconds())}`;
+  document.getElementById('live-date').textContent=n.toLocaleDateString(undefined,{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+}
+setInterval(updateClock,1000); updateClock();
+
+// ═══════════════════════════════════════════════
+//  SCREEN ROUTING
+// ═══════════════════════════════════════════════
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  const hu=document.getElementById('header-user');
+  const hs=document.getElementById('header-sub');
+  const nav=document.getElementById('main-nav');
+
+  if(id==='screen-clock'){
+    hs.style.display='none'; nav.style.display='none';
+    hu.style.display='block';
+    document.getElementById('header-user-name').textContent='👤 '+(currentUser?.name||'');
+  } else if(id==='screen-admin'){
+    hs.style.display='none'; nav.style.display='flex';
+    hu.style.display='block';
+    document.getElementById('header-user-name').textContent='🔐 Admin';
+    renderAdmin(); renderStaffList(); renderVolunteerList();
+  } else {
+    hs.style.display='block'; nav.style.display='none'; hu.style.display='none';
+  }
+}
+
+function signOut(){
+  currentUser=null; activeSession=null;
+  showScreen('screen-landing');
+}
+
+// ═══════════════════════════════════════════════
+//  LANDING ACTIONS
+// ═══════════════════════════════════════════════
+function goToStaffLogin(){
+  populateStaffDropdown();
+  resetPin();
+  document.getElementById('pin-section').style.display='none';
+  document.getElementById('staff-login-select').value='';
+  document.getElementById('pin-err').textContent='';
+  showScreen('screen-staff-login');
+}
+function goToAdminLogin(){
+  document.getElementById('admin-pw-input').value='';
+  document.getElementById('admin-pw-err').textContent='';
+  showScreen('screen-admin-login');
+}
+
+// ═══════════════════════════════════════════════
+//  STAFF LOGIN
+// ═══════════════════════════════════════════════
+function populateStaffDropdown(){
+  const sel=document.getElementById('staff-login-select');
+  const staff=loadStaff();
+  sel.innerHTML='<option value="">— Select name —</option>';
+  staff.sort((a,b)=>a.name.localeCompare(b.name)).forEach(s=>{
+    const o=document.createElement('option'); o.value=s.name; o.textContent=s.name; sel.appendChild(o);
+  });
+}
+
+function onStaffSelected(){
+  const v=document.getElementById('staff-login-select').value;
+  document.getElementById('pin-section').style.display=v?'block':'none';
+  resetPin();
+  document.getElementById('pin-err').textContent='';
+}
+
+// ═══════════════════════════════════════════════
+//  PIN NUMPAD
+// ═══════════════════════════════════════════════
+function updateDots(){
+  for(let i=0;i<4;i++) document.getElementById(`dot-${i}`).classList.toggle('filled',i<pinBuffer.length);
+}
+function pinKey(d){
+  if(pinBuffer.length>=4) return;
+  pinBuffer+=d; updateDots();
+  if(pinBuffer.length===4) setTimeout(checkPin,160);
+}
+function pinBackspace(){
+  pinBuffer=pinBuffer.slice(0,-1); updateDots();
+  document.getElementById('pin-err').textContent='';
+}
+function resetPin(){ pinBuffer=''; updateDots(); }
+
+function checkPin(){
+  const name=document.getElementById('staff-login-select').value;
+  const staff=loadStaff();
+  const member=staff.find(s=>s.name===name);
+  if(!member){ pinFail('Staff not found.'); return; }
+  if(pinBuffer===member.pin){
+    currentUser={name:member.name};
+    document.getElementById('clock-greeting').textContent=`Welcome, ${member.name.split(' ')[0]}! 👋`;
+    // Check for open session
+    const entries=loadEntries(); const today=todayStr();
+    const open=entries.find(e=>e.name===member.name&&e.date===today&&!e.clockOut);
+    if(open){ activeSession={name:member.name,clockInTime:parseTime(open.clockIn,today)}; updateClockUI(true); }
+    else { activeSession=null; updateClockUI(false); }
+    renderTodaySessions(member.name);
+    showScreen('screen-clock');
+  } else { pinFail('Incorrect PIN — try again.'); }
+}
+
+function pinFail(msg){
+  const disp=document.getElementById('pin-display');
+  disp.classList.add('pin-error');
+  document.getElementById('pin-err').textContent=msg;
+  setTimeout(()=>{ disp.classList.remove('pin-error'); resetPin(); },700);
+}
+
+function parseTime(str,dateStr){
+  const [time,ampm]=str.split(' ');
+  let [h,m]=time.split(':').map(Number);
+  if(ampm==='PM'&&h!==12) h+=12;
+  if(ampm==='AM'&&h===12) h=0;
+  const [y,mo,d]=dateStr.split('-').map(Number);
+  return new Date(y,mo-1,d,h,m);
+}
+
+// ═══════════════════════════════════════════════
+//  ADMIN LOGIN
+// ═══════════════════════════════════════════════
+function adminLogin(){
+  const val=document.getElementById('admin-pw-input').value;
+  if(val===getAdminPw()){
+    // Reset to entries tab
+    document.querySelectorAll('.nav-pill').forEach(b=>b.classList.remove('active'));
+    document.getElementById('nav-entries').classList.add('active');
+    document.querySelectorAll('.admin-tab').forEach(t=>t.classList.remove('active'));
+    document.getElementById('admin-tab-entries').classList.add('active');
+    showScreen('screen-admin');
+  } else {
+    document.getElementById('admin-pw-err').textContent='❌ Incorrect password.';
+    const inp=document.getElementById('admin-pw-input');
+    inp.value=''; inp.classList.add('shake');
+    setTimeout(()=>inp.classList.remove('shake'),500);
+  }
+}
+
+// ═══════════════════════════════════════════════
+//  ADMIN TABS
+// ═══════════════════════════════════════════════
+function showAdminTab(tab,btn){
+  document.querySelectorAll('.admin-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.nav-pill').forEach(b=>b.classList.remove('active'));
+  document.getElementById('admin-tab-'+tab).classList.add('active');
+  if(btn) btn.classList.add('active');
+  if(tab==='staff') renderStaffList();
+  if(tab==='volunteers') renderVolunteerList();
+}
+
+// ═══════════════════════════════════════════════
+//  CLOCK IN / OUT
+// ═══════════════════════════════════════════════
+function clockIn(){
+  if(!currentUser) return;
+  const name=currentUser.name;
+  const entries=loadEntries(); const today=todayStr();
+  if(entries.find(e=>e.name===name&&e.date===today&&!e.clockOut)){ showToast('Already clocked in!',true); return; }
+  activeSession={name,clockInTime:new Date()};
+  updateClockUI(true);
+  showToast(`Clocked in — ${name.split(' ')[0]} 👋`);
+}
+
+function clockOut(){
+  if(!activeSession) return;
+  const out=new Date(); const cin=activeSession.clockInTime;
+  if(out<=cin){ showToast('Clock-out must be after clock-in!',true); return; }
+  const mins=Math.round((out-cin)/60000);
+  const entry={id:Date.now(),name:activeSession.name,date:todayStr(),clockIn:fmt12(cin),clockOut:fmt12(out),totalMins:mins};
+  const entries=loadEntries(); entries.push(entry); saveEntries(entries);
+  showToast(`Clocked out — ${fmtHours(mins)} logged ✅`);
+  activeSession=null; updateClockUI(false);
+  renderTodaySessions(currentUser.name);
+}
+
+function updateClockUI(isIn){
+  const badge=document.getElementById('status-badge');
+  const txt=document.getElementById('status-text');
+  const bIn=document.getElementById('btn-in'); const bOut=document.getElementById('btn-out');
+  if(isIn&&activeSession){
+    badge.className='status-badge clocked-in';
+    txt.textContent='Clocked in at '+fmt12(activeSession.clockInTime);
+    bIn.disabled=true; bOut.disabled=false;
+  } else {
+    badge.className='status-badge idle';
+    txt.textContent='Not clocked in';
+    bIn.disabled=false; bOut.disabled=true;
+  }
+}
+
+// ═══════════════════════════════════════════════
+//  TODAY SESSIONS
+// ═══════════════════════════════════════════════
+function renderTodaySessions(name){
+  const sessions=loadEntries().filter(e=>e.name===name&&e.date===todayStr());
+  const card=document.getElementById('today-card');
+  const cont=document.getElementById('today-sessions');
+  card.style.display='block';
+  if(!sessions.length){ cont.innerHTML='<div style="color:var(--mid);font-size:0.9rem;text-align:center;padding:12px 0;">No sessions yet today.</div>'; return; }
+  const tot=sessions.reduce((s,e)=>s+(e.totalMins||0),0);
+  cont.innerHTML=sessions.map(e=>`
+    <div class="summary-row">
+      <span class="label">${e.clockIn} → ${e.clockOut||'…'}</span>
+      <span class="value">${e.clockOut?fmtHours(e.totalMins):'🟢 Active'}</span>
+    </div>`).join('')+(sessions.length>1?`
+    <div class="summary-row" style="margin-top:6px;">
+      <span class="label" style="font-weight:700;color:var(--dark);">Total today</span>
+      <span class="value" style="color:var(--grass);">${fmtHours(tot)}</span>
+    </div>`:'');
+}
+
+// ═══════════════════════════════════════════════
+//  ADMIN — ENTRIES
+// ═══════════════════════════════════════════════
+function renderAdmin(){
+  const entries=loadEntries();
+  const f=(document.getElementById('filter-input')?.value||'').toLowerCase();
+  let list=f?entries.filter(e=>e.name.toLowerCase().includes(f)||e.date.includes(f)):entries;
+  list=[...list].sort((a,b)=>b.id-a.id);
+  const tbody=document.getElementById('admin-tbody');
+  const empty=document.getElementById('empty-state');
+  if(!list.length){ tbody.innerHTML=''; empty.style.display='block'; }
+  else {
+    empty.style.display='none';
+    tbody.innerHTML=list.map(e=>`
+      <tr>
+        <td><strong>${e.name}</strong></td>
+        <td>${formatDate(e.date)}</td>
+        <td>${e.clockIn}</td>
+        <td>${e.clockOut||'<span style="color:var(--grass);font-weight:600;">Active</span>'}</td>
+        <td>${e.clockOut?`<span class="pill pill-green">${fmtHours(e.totalMins)}</span>`:'<span class="pill pill-yellow">In progress</span>'}</td>
+      </tr>`).join('');
+  }
+  // Totals
+  const today=todayStr();
+  const byP={};
+  entries.filter(e=>e.date===today&&e.clockOut).forEach(e=>{ byP[e.name]=(byP[e.name]||0)+e.totalMins; });
+  const names=Object.keys(byP);
+  document.getElementById('totals-grid').innerHTML=names.length?names.sort().map(n=>`
+    <div class="total-chip">
+      <div class="t-name">${n.split(' ')[0]}</div>
+      <div class="t-hrs">${fmtHours(byP[n])}</div>
+      <div style="font-size:0.75rem;color:var(--mid);margin-top:2px;">today</div>
+    </div>`).join(''):'';
+}
+
+// ═══════════════════════════════════════════════
+//  ADMIN — STAFF MANAGEMENT
+// ═══════════════════════════════════════════════
+let editingStaffName = null; // null = add, string = editing existing
+
+function renderStaffList(){
+  const staff=loadStaff();
+  const ul=document.getElementById('staff-list-ul');
+  if(!staff.length){ ul.innerHTML='<li style="color:var(--mid);text-align:center;padding:24px;">No staff yet.</li>'; return; }
+  ul.innerHTML=staff.sort((a,b)=>a.name.localeCompare(b.name)).map(s=>`
+    <li class="staff-item">
+      <div>
+        <div class="s-name">${s.name}</div>
+        <div class="s-pin">PIN: ${'•'.repeat(s.pin.length)}</div>
+      </div>
+      <div class="staff-actions">
+        <button class="icon-btn" title="Rename" onclick="openRenameStaffModal('${s.name.replace(/'/g,"\\'")}')">✏️ Name</button>
+        <button class="icon-btn" title="Change PIN" onclick="openEditStaffModal('${s.name.replace(/'/g,"\\'")}')">🔑 PIN</button>
+        <button class="icon-btn del" title="Delete" onclick="deleteStaff('${s.name.replace(/'/g,"\\'")}')">🗑</button>
+      </div>
+    </li>`).join('');
+}
+
+function openAddStaffModal(){
+  editingStaffName=null;
+  document.getElementById('modal-title').textContent='Add Staff Member';
+  document.getElementById('modal-name').value='';
+  document.getElementById('modal-name').disabled=false;
+  document.getElementById('modal-pin-label').style.display='block';
+  document.getElementById('modal-pin').style.display='block';
+  document.getElementById('modal-pin').value='';
+  document.getElementById('modal-err').textContent='';
+  document.getElementById('staff-modal').classList.add('open');
+  setTimeout(()=>document.getElementById('modal-name').focus(),300);
+}
+function openEditStaffModal(name){
+  editingStaffName='pin:'+name;
+  document.getElementById('modal-title').textContent='Change PIN — '+name;
+  document.getElementById('modal-name').value=name;
+  document.getElementById('modal-name').disabled=true;
+  document.getElementById('modal-pin-label').style.display='block';
+  document.getElementById('modal-pin').style.display='block';
+  document.getElementById('modal-pin').value='';
+  document.getElementById('modal-err').textContent='';
+  document.getElementById('staff-modal').classList.add('open');
+  setTimeout(()=>document.getElementById('modal-pin').focus(),300);
+}
+function openRenameStaffModal(name){
+  editingStaffName='rename:'+name;
+  document.getElementById('modal-title').textContent='Rename Staff Member';
+  document.getElementById('modal-name').value=name;
+  document.getElementById('modal-name').disabled=false;
+  document.getElementById('modal-pin-label').style.display='none';
+  document.getElementById('modal-pin').style.display='none';
+  document.getElementById('modal-pin').value='skip'; // bypass PIN validation
+  document.getElementById('modal-err').textContent='';
+  document.getElementById('staff-modal').classList.add('open');
+  setTimeout(()=>{ const el=document.getElementById('modal-name'); el.focus(); el.select(); },300);
+}
+function closeModal(){ document.getElementById('staff-modal').classList.remove('open'); }
+
+function saveStaffModal(){
+  const name=document.getElementById('modal-name').value.trim();
+  const pin=document.getElementById('modal-pin').value.trim();
+  const err=document.getElementById('modal-err');
+  if(!name){ err.textContent='Name is required.'; return; }
+
+  const staff=loadStaff();
+
+  // RENAME mode
+  if(editingStaffName && editingStaffName.startsWith('rename:')){
+    const oldName=editingStaffName.slice(7);
+    if(name===oldName){ closeModal(); return; }
+    if(staff.find(s=>s.name===name)){ err.textContent='That name already exists.'; return; }
+    const idx=staff.findIndex(s=>s.name===oldName);
+    if(idx===-1){ err.textContent='Staff not found.'; return; }
+    staff[idx].name=name;
+    saveStaff(staff);
+    // Update any time entries with the old name
+    const entries=loadEntries().map(e=>e.name===oldName?{...e,name}:e);
+    saveEntries(entries);
+    closeModal(); renderStaffList(); populateStaffDropdown();
+    showToast(`Renamed to ${name} ✅`);
+    return;
+  }
+
+  // CHANGE PIN mode
+  if(editingStaffName && editingStaffName.startsWith('pin:')){
+    if(!/^\d{4}$/.test(pin)){ err.textContent='PIN must be exactly 4 digits (0–9).'; return; }
+    const oldName=editingStaffName.slice(4);
+    const idx=staff.findIndex(s=>s.name===oldName);
+    if(idx===-1){ err.textContent='Staff not found.'; return; }
+    staff[idx].pin=pin;
+    saveStaff(staff); closeModal(); renderStaffList();
+    showToast('PIN updated ✅');
+    return;
+  }
+
+  // ADD mode
+  if(!/^\d{4}$/.test(pin)){ err.textContent='PIN must be exactly 4 digits (0–9).'; return; }
+  if(staff.find(s=>s.name===name)){ err.textContent='That name already exists.'; return; }
+  staff.push({name,pin});
+  saveStaff(staff); closeModal(); renderStaffList(); populateStaffDropdown();
+  showToast(`${name} added ✅`);
+}
+
+function deleteStaff(name){
+  if(!confirm(`Remove ${name} from the staff list?\n(Their time entries will not be deleted.)`)) return;
+  saveStaff(loadStaff().filter(s=>s.name!==name));
+  renderStaffList(); populateStaffDropdown(); showToast(`${name} removed.`);
+}
+
+// ═══════════════════════════════════════════════
+//  ADMIN — VOLUNTEER MANAGEMENT
+// ═══════════════════════════════════════════════
+let editingVolunteerName = null; // null = add, string = renaming
+
+function renderVolunteerList(){
+  const vols=loadVolunteers();
+  const ul=document.getElementById('volunteer-list-ul');
+  if(!vols.length){ ul.innerHTML='<li style="color:var(--mid);text-align:center;padding:24px;">No volunteers yet.</li>'; return; }
+  ul.innerHTML=vols.sort((a,b)=>a.name.localeCompare(b.name)).map(v=>`
+    <li class="staff-item">
+      <div>
+        <div class="s-name">${v.name}</div>
+        <div class="s-pin" style="color:var(--grass);">Volunteer</div>
+      </div>
+      <div class="staff-actions">
+        <button class="icon-btn" title="Rename" onclick="openEditVolunteerModal('${v.name.replace(/'/g,"\\'")}')">✏️ Rename</button>
+        <button class="icon-btn del" title="Delete" onclick="deleteVolunteer('${v.name.replace(/'/g,"\\'")}')">🗑</button>
+      </div>
+    </li>`).join('');
+}
+
+function openAddVolunteerModal(){
+  editingVolunteerName=null;
+  document.getElementById('vol-modal-title').textContent='Add Volunteer';
+  document.getElementById('vol-modal-name').value='';
+  document.getElementById('vol-modal-err').textContent='';
+  document.getElementById('volunteer-modal').classList.add('open');
+  setTimeout(()=>document.getElementById('vol-modal-name').focus(),300);
+}
+function openEditVolunteerModal(name){
+  editingVolunteerName=name;
+  document.getElementById('vol-modal-title').textContent='Rename Volunteer';
+  document.getElementById('vol-modal-name').value=name;
+  document.getElementById('vol-modal-err').textContent='';
+  document.getElementById('volunteer-modal').classList.add('open');
+  setTimeout(()=>{ const el=document.getElementById('vol-modal-name'); el.focus(); el.select(); },300);
+}
+function closeVolunteerModal(){ document.getElementById('volunteer-modal').classList.remove('open'); }
+
+function saveVolunteerModal(){
+  const name=document.getElementById('vol-modal-name').value.trim();
+  const err=document.getElementById('vol-modal-err');
+  if(!name){ err.textContent='Name is required.'; return; }
+  const vols=loadVolunteers();
+  if(editingVolunteerName){
+    if(name===editingVolunteerName){ closeVolunteerModal(); return; }
+    if(vols.find(v=>v.name===name)){ err.textContent='That name already exists.'; return; }
+    const idx=vols.findIndex(v=>v.name===editingVolunteerName);
+    if(idx===-1){ err.textContent='Volunteer not found.'; return; }
+    vols[idx].name=name;
+    saveVolunteers(vols); closeVolunteerModal(); renderVolunteerList();
+    showToast(`Renamed to ${name} ✅`);
+  } else {
+    if(vols.find(v=>v.name===name)){ err.textContent='That name already exists.'; return; }
+    vols.push({name});
+    saveVolunteers(vols); closeVolunteerModal(); renderVolunteerList();
+    showToast(`${name} added ✅`);
+  }
+}
+
+function deleteVolunteer(name){
+  if(!confirm(`Remove ${name} from the volunteer list?`)) return;
+  saveVolunteers(loadVolunteers().filter(v=>v.name!==name));
+  renderVolunteerList(); showToast(`${name} removed.`);
+}
+
+// ═══════════════════════════════════════════════
+//  ADMIN — CHANGE PASSWORD
+// ═══════════════════════════════════════════════
+function changeAdminPw(){
+  const cur=document.getElementById('cur-pw').value;
+  const nxt=document.getElementById('new-pw').value;
+  const con=document.getElementById('conf-pw').value;
+  const msg=document.getElementById('pw-msg');
+  if(cur!==getAdminPw()){ msg.className='err-msg'; msg.textContent='❌ Current password is wrong.'; return; }
+  if(nxt.length<4){ msg.className='err-msg'; msg.textContent='❌ New password must be at least 4 characters.'; return; }
+  if(nxt!==con){ msg.className='err-msg'; msg.textContent='❌ Passwords do not match.'; return; }
+  setAdminPw(nxt);
+  msg.className='ok-msg'; msg.textContent='✅ Password changed successfully!';
+  document.getElementById('cur-pw').value='';
+  document.getElementById('new-pw').value='';
+  document.getElementById('conf-pw').value='';
+}
+
+// ═══════════════════════════════════════════════
+//  EXPORT / CLEAR
+// ═══════════════════════════════════════════════
+function exportCSV(){
+  const entries=loadEntries();
+  if(!entries.length){ showToast('No data to export yet.',true); return; }
+  const hdr=['Name','Date','Clock In','Clock Out','Total Minutes','Total Hours'];
+  const rows=entries.map(e=>[`"${e.name}"`,e.date,e.clockIn,e.clockOut||'',e.totalMins||'',e.totalMins?(e.totalMins/60).toFixed(2):'']);
+  const csv=[hdr,...rows].map(r=>r.join(',')).join('\n');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
+  a.download=`time-log-${todayStr()}.csv`; a.click();
+  showToast('CSV downloaded ✅');
+}
+
+function clearAll(){
+  if(!confirm('Delete ALL time entries? This cannot be undone.')) return;
+  localStorage.removeItem(ENTRIES_KEY); renderAdmin(); showToast('All entries cleared.');
+}
+
+// ═══════════════════════════════════════════════
+//  TOAST
+// ═══════════════════════════════════════════════
+let toastT;
+function showToast(msg,err=false){
+  const el=document.getElementById('toast');
+  el.textContent=msg; el.className='show'+(err?' error':'');
+  clearTimeout(toastT); toastT=setTimeout(()=>el.className='',3200);
+}
+
+// ═══════════════════════════════════════════════
+//  HELPERS
+// ═══════════════════════════════════════════════
+function todayStr(){ const d=new Date(); return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`; }
+function fmt12(d){ let h=d.getHours(),m=d.getMinutes(); const a=h>=12?'PM':'AM'; h=h%12||12; return `${h}:${pad(m)} ${a}`; }
+function fmtHours(m){ if(!m&&m!==0)return'—'; const h=Math.floor(m/60),r=m%60; if(!h)return`${r}m`; if(!r)return`${h}h`; return`${h}h ${r}m`; }
+function formatDate(s){ if(!s)return''; const [y,mo,d]=s.split('-'); const M=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']; return`${M[+mo-1]} ${+d}, ${y}`; }
+</script>
+</body>
+</html>
